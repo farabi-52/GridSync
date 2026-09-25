@@ -1,0 +1,544 @@
+# SPDX-FileCopyrightText:  PyPSA-Earth and PyPSA-Eur Authors
+# SPDX-License-Identifier: CC0-1.0
+#
+# Bangladesh (BD) — 2050 planning-horizon scenario
+# 15-bus simplified network | transmission expansion allowed | hourly resolution
+# Final milestone in your 2030 -> 2040 -> 2050 trajectory (30% RES ceiling, near-net-zero framing).
+# Derived from config.bd_2040.yaml — only the deltas that matter for 2050 are called out below.
+
+version: 0.3.0
+tutorial: false
+
+logging:
+  level: INFO
+  format: "%(levelname)s:%(name)s:%(message)s"
+
+countries: ["BD"]
+output_currency: USD
+currency_year: 2020
+cost_scenario: central
+financial_case: market
+
+policy_config:
+  hydrogen:
+    enable: false        # keep off in this power-only run; use a dedicated sector-coupled 2050 file for H2/EV results
+    additionality: false
+    is_reference: false
+    temporal_matching: no_res_matching
+
+solar_thermal: {}
+existing_capacities: {}
+
+enable:
+  retrieve_databundle: false
+  retreive_databundle_light: false
+  retrieve_cost_data: true          # cost year changes again (2050) — must re-pull technology-data cost projections
+  download_osm_data: false
+  build_natura_raster: false
+  build_cutout: false
+  build_renewable_profiles: true
+  progress_bar: true
+
+custom_rules: []
+
+run:
+  name: "BD_2050_15cl_RES30"        # distinct run name — keeps 2030/2040/2050 results/ folders separate
+  shared_cutouts: true
+
+scenario:
+  simpl: ['']
+  sopts: ['']
+  planning_horizons: "2050"                   # <-- core change
+  ll: ['copt']
+  clusters: [15]
+  opts: ['Co2L-RES0.30-6H']                    # <-- RE ceiling reaches 30%, the final point in your own 15/27.5/30% table
+  demand: "era5_2018"                           # weather year unchanged; only demand LEVEL changes via load_options.prediction_year
+  technologies: [onwind, solar, hydro]
+
+demand_data:
+  update_data: false
+  base_year: 2050                               # <-- core change, was 2040
+  other_industries: false
+  aluminium_year: false
+
+sector:
+  chp: false
+  transmission_efficiency: 0.978     # further nudged up vs. 2040 (0.975) assuming continued grid-loss reduction; revise against your own assumption if the paper uses a flat value
+  airport_sizing_factor: 1.0
+  gas: {}
+  h2_underground:
+    use: false
+    countries: []
+  hydrogen:
+    network: false
+    enable: false
+    set_color_shares: false
+    additionality: false
+    is_reference: false
+    temporal_matching: no_res_matching
+  ship:
+    enable: false
+  heat_pump_sink_T: 55
+  space_heat_share: 0.5
+  coal:
+    shift_to_elec: false
+  industry_util_factor: 0.8          # nudged up again vs. 2040 (0.75) — revise to your actual industrial growth assumption
+
+fossil_reserves:
+  use: false
+  file: ""
+
+custom_data:
+  export_ports: false
+  airports: false
+  gas_network: false
+  h2_underground:
+    use: false
+    countries: []
+  water_costs: false
+  renewables: []
+  industry_database: false
+  industry_demand: false
+  add_existing: false            # unchanged from 2040 — 2050 fleet must still draw on powerplantmatching/greenfield candidates, not just today's plants
+
+foresight:
+  enable: false                  # still a single-horizon snapshot; set true + years:[2030,2040,2050] only for a joint myopic pathway run across all three
+  years: []
+
+snapshots:
+  start: "2018-01-01"
+  end: "2019-01-01"
+  inclusive: "left"
+
+crs:
+  geo_crs: 'EPSG:4326'
+  distance_crs: 'EPSG:3857'
+  area_crs: 'ESRI:54009'
+
+augmented_line_connection:
+  add_to_snakefile: false
+  connectivity_upgrade: 3
+  new_line_type: ["HVAC"]
+  min_expansion: 1
+  min_DC_length: 200
+
+cluster_options:
+  simplify_network:
+    to_substations: false
+    algorithm: kmeans
+    feature: solar+onwind-time
+    exclude_carriers: []
+    remove_stubs: true
+    remove_stubs_across_borders: true
+    p_threshold_drop_isolated: 2500
+    p_threshold_merge_isolated: 4000
+  cluster_network:
+    algorithm: kmeans
+    feature: solar+onwind-time
+    exclude_carriers: []
+  alternative_clustering: false
+  distribute_cluster: ['load']
+  out_logging: true
+  aggregation_strategies:
+    generators:
+      p_nom: sum
+      p_nom_min: sum
+      p_min_pu: mean
+      marginal_cost: mean
+      committable: any
+      ramp_limit_up: max
+      ramp_limit_down: max
+      efficiency: mean
+
+build_shape_options:
+  gadm_layer_id: 1
+  update_file: false
+  out_logging: true
+  year: 2020
+  nprocesses: 5
+  worldpop_method: "standard"
+  gdp_method: "standard"
+  contended_flag: "set_by_country"
+  simplify_gadm: false
+
+clean_osm_data_options:
+  names_by_shapes: true
+  threshold_voltage: 31000
+  tag_substation: "transmission"
+  add_line_endings: true
+  generator_name_method: OSM
+  use_custom_lines: "OSM_only"
+  path_custom_lines: false
+  use_custom_substations: "OSM_only"
+  path_custom_substations: false
+  use_custom_cables: "OSM_only"
+  path_custom_cables: false
+
+build_osm_network:
+  group_close_buses: true
+  group_tolerance_buses: 10000
+  split_overpassing_lines: true
+  overpassing_lines_tolerance: 1
+  force_ac: false
+
+base_network:
+  min_voltage_substation_offshore: 31000
+  min_voltage_rebase_voltage: 31000
+
+load_options:
+  ssp: "ssp2-4.5"
+  weather_year: 2018
+  prediction_year: 2050        # <-- core change, was 2040
+  scale: 2.235                  # keep unless your paper recalibrates long-run demand scaling for the 2050 horizon
+
+electricity:
+  base_voltage: 132.
+  voltages: [66., 132., 230., 400.]
+
+  co2limit: 1.5e+7             # <-- core change: steep cut vs. 2040 (4.2e+7), consistent with PyPSA-BD's own reported
+                                 # coal decline to ~5% by 2050 and a near-net-zero power-sector narrative under MCPP/NDC.
+                                 # This is NOT literal zero — residual gas/oil backup for reliability is still allowed.
+                                 # If your final paper instead follows a slower "Extended Coal to 2050" sensitivity
+                                 # (as discussed in your novelty notes), raise this back toward 3.0e+7-3.5e+7 instead.
+  co2base: 4.67e+7             # unchanged — same fixed 2018 historical baseline used across all three horizons
+  agg_p_nom_limits: data/agg_p_nom_minmax.csv
+  hvdc_as_lines: false
+  automatic_emission: false
+  automatic_emission_base_year: 2018
+
+  operational_reserve:
+    activate: false
+    epsilon_load: 0.02
+    epsilon_vres: 0.02
+    contingency: 0
+
+  max_hours:
+    battery: 12
+    H2: 168                    # keep — seasonal H2 storage duration assumption unchanged across horizons unless you're sizing it explicitly for 2050
+
+  extendable_carriers:
+    Generator: [solar, onwind, offwind-ac, offwind-dc, CCGT, OCGT, nuclear]
+    StorageUnit: [battery]      # <-- core change: StorageUnit battery now extendable (was empty in 2030/2040).
+                                  # Your own PyPSA-BD benchmark cites ~28.5 GW storage needed by 2050 — that scale of
+                                  # flexibility cannot appear if StorageUnit stays empty; battery must be buildable
+                                  # either here or as a Store (kept below too — pick ONE representation, not both,
+                                  # to avoid double-counting battery capacity across StorageUnit and Store components).
+    Store: [battery, H2]
+    Link: [H2 electrolysis]
+    p_nom_max: 2.0
+
+  renewable_carriers: [solar, onwind, offwind-ac, offwind-dc, hydro]
+
+  extendable_parameters:
+    solar:
+      p_nom_max: 15000       # raised from 9000 (2040) — solar is the main lever pushing RES share to the 30% ceiling
+    onwind:
+      p_nom_max: 4000        # raised from 2500 (2040)
+    offwind-ac:
+      p_nom_max: 1500
+    offwind-dc:
+      p_nom_max: 5000        # offshore wind given more room by 2050 — Bay of Bengal potential your intro references becomes viable at this horizon
+
+  powerplants_filter: (DateIn <= 2050) & (DateOut >= 2050 | DateOut != DateOut)   # <-- core change, window shifted to 2050
+  custom_powerplants: merge
+
+  conventional_carriers: [oil, OCGT, CCGT, coal, nuclear]   # coal carrier kept available so the optimizer can show it
+                                                              # shrinking toward ~5% rather than being hard-excluded —
+                                                              # a hard exclusion would force zero coal, which is a
+                                                              # DIFFERENT scenario (full coal exit) than your BAU-style
+                                                              # gradual-decline narrative. Confirm which one your 2050
+                                                              # result is supposed to represent before running.
+
+  estimate_renewable_capacities:
+    stats: "irena"
+    year: 2020
+    p_nom_min: 1
+    p_nom_max: false
+    technology_mapping:
+      Offshore: [offwind-ac, offwind-dc]
+      Onshore: [onwind]
+      PV: [solar]
+
+sector_coupling:
+  h2_fertilizer: false
+
+lines:
+  ac_types:
+    66.: "Al/St 240/40 2-bundle 220.0"
+    132.: "Al/St 240/40 2-bundle 220.0"
+    230.: "Al/St 240/40 3-bundle 300.0"
+    400.: "Al/St 560/50 4-bundle 750.0"
+  dc_types:
+    66.:  "HVDC XLPE 1000"
+    132.: "HVDC XLPE 1000"
+    230.: "HVDC XLPE 1000"
+    400.: "HVDC XLPE 1000"
+  s_max_pu: 0.7
+  s_nom_max: .inf
+  length_factor: 1.25
+  under_construction: "zero"
+
+links:
+  p_max_pu: 1.0
+  p_nom_max: .inf
+  under_construction: "zero"
+
+transformers:
+  x: 0.1
+  s_nom: 2000.
+  type: ""
+
+export:
+  results: true
+  plots: true
+  excel: false
+  netcdf: true
+  ship: false
+  store: false
+  store_capital_costs: false
+  export_profile: false
+  endogenous: false
+  endogenous_price: false
+  h2export: false
+
+atlite:
+  nprocesses: 4
+  cutouts:
+    cutout-2018-era5:
+      module: era5
+      dx: 0.3
+      dy: 0.3
+
+renewable:
+  onwind:
+    cutout: cutout-2018-era5
+    resource:
+      method: wind
+      turbine: Vestas_V112_3MW
+    capacity_per_sqkm: 3
+    copernicus:
+      grid_codes: [20, 30, 40, 60]
+      distance: 1000
+      distance_grid_codes: [50]
+    natura: true
+    potential: conservative
+    clip_p_max_pu: 1.e-2
+    extendable: true
+  offwind-ac:
+    cutout: cutout-2018-era5
+    resource:
+      method: wind
+      turbine: NREL_ReferenceTurbine_5MW_offshore
+    capacity_per_sqkm: 2
+    correction_factor: 0.8855
+    copernicus:
+      grid_codes: [80, 200]
+    natura: true
+    max_depth: 50
+    max_shore_distance: 30000
+    potential: simple
+    clip_p_max_pu: 1.e-2
+    extendable: true
+  offwind-dc:
+    cutout: cutout-2018-era5
+    resource:
+      method: wind
+      turbine: NREL_ReferenceTurbine_5MW_offshore
+    capacity_per_sqkm: 3
+    correction_factor: 0.8855
+    copernicus:
+      grid_codes: [80, 200]
+    natura: true
+    max_depth: 50
+    min_shore_distance: 30000
+    potential: conservative
+    clip_p_max_pu: 1.e-2
+    extendable: true
+  solar:
+    cutout: cutout-2018-era5
+    resource:
+      method: pv
+      panel: CSi
+      orientation: latitude_optimal
+    capacity_per_sqkm: 4.6
+    correction_factor: 0.854337
+    copernicus:
+      grid_codes: [20, 30, 40, 50, 60, 90, 100]
+    natura: true
+    potential: simple
+    clip_p_max_pu: 1.e-2
+    extendable: true
+  hydro:
+    cutout: cutout-2013-era5
+    hydrobasins_level: 4
+    resource:
+      method: hydro
+      hydrobasins: data/hydrobasins/hybas_world.shp
+      flowspeed: 1.0
+    carriers: [ror, PHS, hydro]
+    PHS_max_hours: 6
+    hydro_max_hours: "energy_capacity_totals_by_country"
+    hydro_max_hours_default: 6.0
+    clip_min_inflow: 1.0
+    extendable: true
+    multiplier: 1.0
+
+costs:
+  year: 2050                     # <-- core change, was 2040
+  technology_data_version: v0.5.0
+  version: v0.5.0
+  rooftop_share: 0.20
+  output_currency: USD
+  cost_scenario: central
+  financial_case: market
+  currency_year: 2020
+  retrieve_cost_data: true
+  fill_values:
+    FOM: 0
+    VOM: 0
+    efficiency: 1
+    fuel: 0
+    investment: 0
+    lifetime: 25
+    CO2 intensity: 0
+    discount rate: 0.07
+  marginal_cost:
+    solar: 0.0085          # continued decline vs. 2040 (0.0100) — revise against your technology-data pull for cost.year 2050
+    onwind: 0.0145
+    offwind: 0.0145
+    hydro: 0.
+    H2: 0.
+    electrolysis: 0.
+    fuel cell: 0.
+    battery: 0.
+    battery inverter: 0.
+  emission_prices:
+    co2: 0.
+  discountrate: 0.07
+
+monte_carlo:
+  options:
+    add_to_snakefile: false
+    samples: 7
+    sampling_strategy: "chaospy"
+  pypsa_standard:
+    loads_t.p_set: [0.9, 1.1]
+
+results_dir: "results"
+summary_dir: "results/summary"
+logs_dir: "logs"
+
+subregions:
+  add: false
+subregion:
+  define_by_gadm: {}
+  path_custom_shapes: ""
+
+solving:
+  solver:
+    name: highs
+    options: highs-ipm
+  solver_options:
+    highs-ipm:
+      solver: "ipm"
+      run_crossover: "on"
+      threads: 6
+      parallel: "on"
+      presolve: "on"
+      primal_feasibility_tolerance: 1.0e-4
+      dual_feasibility_tolerance: 1.0e-4
+      ipm_optimality_tolerance: 1.0e-4
+      user_bound_scale: 0
+  options:
+    minimum_renewable_generation: 0.20   # kept as a floor well below the RES0.30 opts ceiling so it never binds
+    skip_iterations: true
+    max_iterations: 1
+    nhours: 8760
+    min_iterations: 1
+    load_shedding: true
+    noisy_costs: true
+    store_basis: true
+    keep_references: true
+    keep_shadowprices: ['Generator', 'StorageUnit', 'Store', 'Bus', 'Line', 'Transformer', 'Link']
+
+plotting:
+  map:
+    figsize: [7, 7]
+    boundaries: [88.01, 20.6, 92.7, 26.6]
+    p_nom:
+      bus_size_factor: 5.e+4
+      linewidth_factor: 3.e+3
+
+  costs_max: 800
+  costs_threshold: 1
+
+  energy_max: 28000.          # raised again from 20000 (2040) for higher 2050 demand/generation levels
+  energy_min: -10000.
+  energy_threshold: 50.
+
+  vre_techs: ["onwind", "offwind-ac", "offwind-dc", "solar", "ror"]
+  conv_techs: ["OCGT", "CCGT", "coal", "oil", "nuclear"]
+  storage_techs: ["hydro+PHS", "battery", "H2"]
+  load_carriers: ["AC load"]
+  AC_carriers: ["AC line", "AC transformer"]
+  link_carriers: ["DC line", "Converter AC-DC"]
+  tech_colors:
+    "onwind": "#235ebc"
+    "onshore wind": "#235ebc"
+    "offwind": "#6895dd"
+    "offwind-ac": "#6895dd"
+    "offshore wind": "#6895dd"
+    "offshore wind ac": "#6895dd"
+    "offwind-dc": "#74c6f2"
+    "offshore wind dc": "#74c6f2"
+    "hydro": "#08ad97"
+    "hydro+PHS": "#08ad97"
+    "PHS": "#08ad97"
+    "hydro reservoir": "#08ad97"
+    "hydroelectricity": "#08ad97"
+    "ror": "#4adbc8"
+    "run of river": "#4adbc8"
+    "solar": "#f9d002"
+    "solar PV": "#f9d002"
+    "solar thermal": "#ffef60"
+    "biomass": "#0c6013"
+    "solid biomass": "#06540d"
+    "biogas": "#23932d"
+    "waste": "#68896b"
+    "geothermal": "#ba91b1"
+    "OCGT": "#d35050"
+    "gas": "#d35050"
+    "natural gas": "#d35050"
+    "CCGT": "#b20101"
+    "nuclear": "#ff9000"
+    "coal": "#707070"
+    "lignite": "#9e5a01"
+    "oil": "#262626"
+    "H2": "#ea048a"
+    "hydrogen storage": "#ea048a"
+    "battery": "#b8ea04"
+    "Electric load": "#f9d002"
+    "electricity": "#f9d002"
+    "lines": "#70af1d"
+    "transmission lines": "#70af1d"
+    "AC-AC": "#70af1d"
+    "AC line": "#70af1d"
+    "links": "#8a1caf"
+    "HVDC links": "#8a1caf"
+    "DC-DC": "#8a1caf"
+    "DC link": "#8a1caf"
+    "load": "#FF0000"
+  nice_names:
+    OCGT: "Open-Cycle Gas"
+    CCGT: "Combined-Cycle Gas"
+    offwind-ac: "Offshore Wind (AC)"
+    offwind-dc: "Offshore Wind (DC)"
+    onwind: "Onshore Wind"
+    solar: "Solar"
+    PHS: "Pumped Hydro Storage"
+    hydro: "Reservoir & Dam"
+    battery: "Battery Storage"
+    H2: "Hydrogen Storage"
+    lines: "Transmission Lines"
+    nuclear: "Nuclear"
+    ror: "Run of River"

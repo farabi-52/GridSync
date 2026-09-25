@@ -1,0 +1,45 @@
+"Electricity statistics by Country/area, Technology, Data Type, Grid connection and Year"
+
+"Country/area","Technology","Data Type","Grid connection","Year",Electricity statistics
+"Bangladesh","Total renewable","Electricity Installed Capacity (MW)","All","2019",557.56
+"Bangladesh","Total renewable","Electricity Generation (GWh)","All","2019",1228.59
+"Bangladesh","Solar photovoltaic","Electricity Installed Capacity (MW)","All","2019",279.61
+"Bangladesh","Solar photovoltaic","Electricity Generation (GWh)","All","2019",376.36
+"Bangladesh","Solar thermal energy","Electricity Installed Capacity (MW)","All","2019",-
+"Bangladesh","Solar thermal energy","Electricity Generation (GWh)","All","2019",-
+"Bangladesh","Onshore wind energy","Electricity Installed Capacity (MW)","All","2019",2.90
+"Bangladesh","Onshore wind energy","Electricity Generation (GWh)","All","2019",5.08
+"Bangladesh","Offshore wind energy","Electricity Installed Capacity (MW)","All","2019",-
+"Bangladesh","Offshore wind energy","Electricity Generation (GWh)","All","2019",-
+"Bangladesh","Renewable hydropower","Electricity Installed Capacity (MW)","All","2019",230.00
+"Bangladesh","Renewable hydropower","Electricity Generation (GWh)","All","2019",812.17
+"Bangladesh","Mixed Hydro Plants","Electricity Installed Capacity (MW)","All","2019",-
+"Bangladesh","Mixed Hydro Plants","Electricity Generation (GWh)","All","2019",-
+"Bangladesh","Marine energy","Electricity Installed Capacity (MW)","All","2019",-
+"Bangladesh","Marine energy","Electricity Generation (GWh)","All","2019",-
+"Bangladesh","Solid biofuels","Electricity Installed Capacity (MW)","All","2019",40.40
+"Bangladesh","Solid biofuels","Electricity Generation (GWh)","All","2019",33.00
+"Bangladesh","Renewable municipal waste","Electricity Installed Capacity (MW)","All","2019",-
+"Bangladesh","Renewable municipal waste","Electricity Generation (GWh)","All","2019",-
+"Bangladesh","Liquid biofuels","Electricity Installed Capacity (MW)","All","2019",-
+"Bangladesh","Liquid biofuels","Electricity Generation (GWh)","All","2019",-
+"Bangladesh","Biogas","Electricity Installed Capacity (MW)","All","2019",4.65
+"Bangladesh","Biogas","Electricity Generation (GWh)","All","2019",1.98
+"Bangladesh","Geothermal energy","Electricity Installed Capacity (MW)","All","2019",-
+"Bangladesh","Geothermal energy","Electricity Generation (GWh)","All","2019",-
+"Bangladesh","Total non-renewable","Electricity Installed Capacity (MW)","All","2019",21005.00
+"Bangladesh","Total non-renewable","Electricity Generation (GWh)","All","2019",79440.92
+"Bangladesh","Pumped storage","Electricity Installed Capacity (MW)","All","2019",-
+"Bangladesh","Pumped storage","Electricity Generation (GWh)","All","2019",-
+"Bangladesh","Coal and peat","Electricity Installed Capacity (MW)","All","2019",524.00
+"Bangladesh","Coal and peat","Electricity Generation (GWh)","All","2019",2201.09
+"Bangladesh","Oil","Electricity Installed Capacity (MW)","All","2019",7003.00
+"Bangladesh","Oil","Electricity Generation (GWh)","All","2019",12071.49
+"Bangladesh","Natural gas","Electricity Installed Capacity (MW)","All","2019",10678.00
+"Bangladesh","Natural gas","Electricity Generation (GWh)","All","2019",52182.91
+"Bangladesh","Fossil fuels n.e.s.","Electricity Installed Capacity (MW)","All","2019",2800.00
+"Bangladesh","Fossil fuels n.e.s.","Electricity Generation (GWh)","All","2019",12985.44
+"Bangladesh","Nuclear","Electricity Installed Capacity (MW)","All","2019",-
+"Bangladesh","Nuclear","Electricity Generation (GWh)","All","2019",-
+"Bangladesh","Other non-renewable energy","Electricity Installed Capacity (MW)","All","2019",-
+"Bangladesh","Other non-renewable energy","Electricity Generation (GWh)","All","2019",-

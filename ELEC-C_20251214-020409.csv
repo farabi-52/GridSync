@@ -1,0 +1,10 @@
+"Electricity statistics by Country/area, Technology, Data Type, Grid connection and Year"
+
+"Country/area","Technology","Data Type","Grid connection","Year",Electricity statistics
+"Bangladesh","Total non-renewable","Electricity Installed Capacity (MW)","All","2019",21005.00
+"Bangladesh","Coal and peat","Electricity Installed Capacity (MW)","All","2019",524.00
+"Bangladesh","Oil","Electricity Installed Capacity (MW)","All","2019",7003.00
+"Bangladesh","Natural gas","Electricity Installed Capacity (MW)","All","2019",10678.00
+"Bangladesh","Fossil fuels n.e.s.","Electricity Installed Capacity (MW)","All","2019",2800.00
+"Bangladesh","Nuclear","Electricity Installed Capacity (MW)","All","2019",-
+"Bangladesh","Other non-renewable energy","Electricity Installed Capacity (MW)","All","2019",-
